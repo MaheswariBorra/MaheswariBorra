@@ -294,4 +294,331 @@ public class UserServiceImpl implements UserService {
 }
 
 
+-----------------------------------------------------------------------------------------------------------------------------
+USER STORY-9
+
+
+"1-Vendor providing product should provide the contact details, available time and Maps option to locate
+2-Vendor should be able to update his product details
+3-All category divisions available should be listed for the product and Vendor should be able to select one.
+4-Clicking ‘Submit’ should validate the datatype constraints for each field
+5-Vendor failing to provide information on the mandatory fields be provided with an alert message – ‘Please update the highlighted mandatory field(s).’ Also, highlight the missed out field in red
+6-Upon saving the information in the database, display the message ‘Your details are submitted successfully’. 
+7-The product details entered saved should be linked with the vendor ID creating it
+8-Vendor should have the option to edit / delete the product details entered by them.
+"
+
+
+ProductForm.jsp
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1" isELIgnored="false"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
+ 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <script>
+ 
+function validateForm() {
+  var pname = document.forms["product_form"]["productName"].value;
+  if (pname == "") {
+    alert("Product name must be filled out");
+    return false;
+  }
+  var type = document.forms["product_form"]["type"].value;
+  if (type == "") {
+    alert("Categoey must be choose");
+    return false;
+  }
+  var desc = document.forms["product_form"]["description"].value;
+  if (desc == "") {
+    alert("description must be filled out");
+    return false;
+  }
+  var avblty = document.forms["product_form"]["availability"].value;
+  if (avblty == "") {
+    alert("Availability must be filled out");
+    return false;
+  } 
+  var color = document.forms["product_form"]["color"].value;
+  if (color == "") {
+    alert("Color must be filled out");
+    return false;
+  }
+  var qty = document.forms["product_form"]["quantity"].value;
+  if (qty == "") {
+    alert("Quantity must be filled out");
+    return false;
+  }
+  var price = document.forms["product_form"]["price"].value;
+  if (price == "") {
+    alert("Price must be filled out");
+    return false;
+  }
+}
+</script>
+ <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+ <body>
+  <div class="jumbotron" style="background-color: bisque;">
+    <center>  <h1>Cognizant E-commerce</h1>
+      <small>A place for your daily needs</small> </center>
+      <form:form method="get" action="/index">
+      <button type="submit" class="btn btn-info">Home</button>
+      </form:form>
+   </div>  
+   <div class="container mt-5">
+	<div class="row">
+	 <div class="col-md-4 mt-5">
+		<img alt="logo"  src='/images/vendor.jpg'/ style="position: absolute; padding-top: 40%">
+	 </div>
+	 <div class="col-md-8">
+     <h1 style="text-align: center;">Add New Product</h1>
+    
+     <form name="product_form" onsubmit="return validateForm()" method="post" action="/save" modelAttribute="product" >
+        <h5 style="text-align:center; font-family: cursive; color: red;">    ${vStatus }  </h5>  
+        <div class="form-group">       
+          <label>Product Name<b style="color:red">*</b>: </label>  
+          <input name="productName" path="productName" class="form-control" size="150" />
+        </div>
+        <div class="form-group"> 
+          <label>Type<b style="color:red">*</b>:</label>   
+          <select name="type" path="type" class="form-control" >
+            <option value=""></option>
+            <option value = "Electronics">Electronics</option>
+            <option value = " Clothes">Clothes</option>
+            <option value = "Accessories">Accessories</option>
+            <option value = "Foot Wear">Foot Wear</option>
+            <option value = "Fashion">Fashion</option>
+            <option value = "Grocery">Grocery</option>
+            </select></div>
+        <div class="form-group"> 
+          <label>Description<b style="color:red">*</b>:</label>   
+          <input name="description" path="description" class="form-control" size="150" /></div>
+        <div class="form-group"> 
+          <label>Availability<b style="color:red">*</b>:</label>   
+          <input name="availability" path="availability" class="form-control" size="150" /></div>
+         <div class="form-group">    
+          <label>Color<b style="color:red">*</b>:</label>   
+          <input name="color" path="color" class="form-control" size="150" /></div>
+        <div class="form-group"> 
+          <label>Quantity<b style="color:red">*</b>:</label>   
+          <input name="quantity" path="quantity" class="form-control" size="150" /></div>
+         <div class="form-group"> 
+          <label>price<b style="color:red">*</b>:</label>   
+          <input name= "price" path="price" class="form-control" size="150" /></div>
+         <div class="form-check"> 
+          <input id="my-input" required="required" class="form-check-input" type="checkbox" name="" value="false">
+          <label for="my-input" class="form-check-label">Accept the terms and conditions</label></div><br>
+         <div class="form-group"> 
+          <b style="color:red">Note: * mandatory field </b></div>
+          
+            <button type="submit"  class="btn btn-success" >Save</button>
+            </form></div></div></div><br>
+           
+              <div class="row">
+                 <div class="col-sm-2"></div>
+            <div class="col-sm-3">
+         	<form:form method="post" action="/productForm">
+     	    <button type="submit" class="btn btn-success" style="float: center;">Add Product</button>
+            </form:form></div>
+		    <div class="col-sm-3">
+		    <form method="get" action="/viewproduct">
+		    <button type="submit" class="btn btn-success" style="float: right;">View Products</button>
+		   </form></div></div>      
+       
+       </body>
+     <!-- productName,type,description,availability,color,quantity,price -->
+       </html>  
+       
+       
+       ProductEditForm.jsp
+       
+       <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1" isELIgnored="false"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
+ 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<script>
+
+function validateForm() {
+  var pname = document.forms["product_form"]["productName"].value;
+  if (pname == "") {
+    alert("Product name must be filled out");
+    return false;
+  }
+  var type = document.forms["product_form"]["type"].value;
+  if (type == "") {
+    alert("Categoey must be choose");
+    return false;
+  }
+  var desc = document.forms["product_form"]["description"].value;
+  if (desc == "") {
+    alert("description must be filled out");
+    return false;
+  }
+  var avblty = document.forms["product_form"]["availability"].value;
+  if (avblty == "") {
+    alert("Availability must be filled out");
+    return false;
+  } 
+  var color = document.forms["product_form"]["color"].value;
+  if (color == "") {
+    alert("Color must be filled out");
+    return false;
+  }
+  var qty = document.forms["product_form"]["quantity"].value;
+  if (qty == "") {
+    alert("Quantity must be filled out");
+    return false;
+  }
+  var price = document.forms["product_form"]["price"].value;
+  if (price == "") {
+    alert("Price must be filled out");
+    return false;
+  }
+}
+</script>
+ <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+ <body>
+  <div class="jumbotron" style="background-color: bisque;">
+    <center>  <h1>Cognizant E-commerce</h1>
+      <small>A place for your daily needs</small> </center>
+      <form:form method="get" action="/index">
+      <button type="submit" class="btn btn-info">Home</button>
+      </form:form>
+   </div>  
+   <div class="container mt-5">
+	<div class="row">
+	 <div class="col-md-4 mt-5">
+		<img alt="logo"  src='/images/vendor.jpg'/ style="position: absolute; padding-top: 30%">
+	 </div>
+	 <div class="col-md-8">
+ 
+        <center><h1>Edit product details</h1></center>
+       <form:form method="POST" action="/editsave" name="product_form" onsubmit="return validateForm()" >   
+        <div class="form-group">  
+         <form:hidden  path="vId" /></div>
+         <div class="form-group"> 
+          <label>Product Name<b style="color:red">*</b>: </label>
+          <form:input path="productName" class="form-control" size="150" /></div>
+        <div class="form-group">
+          <label>Type<b style="color:red">*</b>:</label>
+          <form:select path="type" name="type" class="form-control" >
+            <form:option value = "Electronics">Electronics</form:option>
+            <form:option value = " Clothes">Clothes</form:option>
+            <form:option value = "Accessories">Accessories</form:option>
+            <form:option value = "Foot Wear">Foot Wear</form:option>
+            <form:option value = "Fashion">Fashion</form:option>
+            <form:option value = "Grocery">Grocery</form:option>
+            </form:select></div>
+        <div class="form-group">   
+          <label>Description<b style="color:red">*</b>:</label>  
+          <form:input path="description" class="form-control" size="150" /></div>
+        <div class="form-group"> 
+          <label>Availability<b style="color:red">*</b>:</label> 
+          <form:input path="availability" class="form-control" size="150" /></div>
+        <div class="form-group">   
+          <label>Color<b style="color:red">*</b>:</label>
+          <form:input path="color" class="form-control" size="150" /></div>
+         <div class="form-group">
+          <label>Quantity<b style="color:red">*</b>:</label>   
+          <form:input path="quantity" class="form-control" size="150" /></div>
+        <div class="form-group"> 
+          <label>price<b style="color:red">*</b>:</label> 
+          <form:input path="price" class="form-control" size="150" /></div>
+         <div class="form-group">
+        <div class="form-group"> 
+          <b style="color:red">Note: * mandatory field </b></div>
+          <input type="submit" class="btn btn-success" value="Edit Save" />   
+       </div>
+       </form:form>
+       </div></div></div>
+       </body>
+       </html>
+       
+       ViewProduct.jsp
+       
+       <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1" isELIgnored="false"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="java.sql.*,java.util.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+  <style>
+  th{
+  background-color:cyan;
+  }
+  </style>
+    <title>Cognizant E-commerce</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="jumbotron" style="background-color: bisque;">
+         <center>  <h1>Cognizant E-commerce</h1>
+      <small>A place for your daily needs</small> </center>
+      <form:form method="get" action="/index">
+      <button type="submit" class="btn btn-info">Home</button>
+      </form:form>
+      <form:form action="/vendorLogOut" method="get">
+      <button type="submit" class="btn btn-info" style="float: right;">Logout</button>
+      </form:form>
+    </div>	
+   <div class="container mt-5" >
+<div class="row">
+<div class="col-md-4 mt-5">
+
+<img alt="logo"  src='/images/vendor.jpg'/ style="position: absolute; padding-top: 30%">
+</div>
+<div class="col-md-8">
+ <center>
+<h1>Products List</h1></center>
+<table border="2" width="70%" cellpadding="2">
+<tr><th>vId</th><th>productName</th><th>type</th><th>description</th><th>availability</th><th>color</th><th>quantity</th><th>price</th><th>Edit</th><th>Delete</th></tr>
+   <c:forEach var="product" items="${list}">  
+   <tr>
+   <td>${product.vId}</td>
+   <td>${product.productName}</td>
+   <td>${product.type}</td>
+   <td>${product.description}</td>
+   <td>${product.availability}</td>
+   <td>${product.color}</td>
+   <td>${product.quantity}</td>
+   <td>${product.price}</td>
+   <td><a href="editProduct/${product.vId}">Edit</a></td>
+   <td><a href="deleteproduct/${product.vId}">Delete</a></td>
+   </tr>
+   </c:forEach>
+   </table>
+   <br/>
+   <div class="col-sm-3">
+  	<form:form method="post" action="/productForm">
+    <button type="submit" class="btn btn-success" style="float: center;">Add Product</button>
+    </form:form></div>
+    <!-- productName,type,description,availability,color,quantity,price --></div></div></div></body></html>
+
+
 
