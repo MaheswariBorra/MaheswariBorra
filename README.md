@@ -13,6 +13,9 @@ USER STORY-2
 2-Admin should select the Admin option. 
 2-Admin's User id and password should be pre-loaded in the database, which can be used to log in.
 "
+
+
+
 create database testdb;
 use testdb;
 CREATE TABLE ADMIN(USER_ID VARCHAR(45) NOT NULL, PASSWORD VARCHAR(15) NOT NULL)
